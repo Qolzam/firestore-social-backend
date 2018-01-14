@@ -1,0 +1,4 @@
+node_modules/
+functions/index.js
+.vscode/
+npm-debug.log
