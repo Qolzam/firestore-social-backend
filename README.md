@@ -22,13 +22,13 @@ and then install the package
  
 #### Install back-end server/serverless
 
- 2. Fork the [firestore-social-backend](https://github.com/Qolzam/firestore-social-backend) repository on Github
- 3. Clone your fork to your local machine `git clone git@github.com:<yourname>/firestore-social-backend.git`
- 4. Configure firebase:
+ 1. Fork the [firestore-social-backend](https://github.com/Qolzam/firestore-social-backend) repository on Github
+ 2. Clone your fork to your local machine `git clone git@github.com:<yourname>/firestore-social-backend.git`
+ 3. Configure firebase:
     - Get [firebase config](https://firebase.google.com/docs/web/setup)
- 6. Installing all nodejs modules:
+ 4. Installing all nodejs modules:
   `cd functions && npm install`
- 7. Deoply ;)
+ 5. Deoply ;)
   `npm start`
 
 
