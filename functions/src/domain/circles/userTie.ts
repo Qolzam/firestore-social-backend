@@ -1,14 +1,17 @@
-import { BaseDomain } from '../common'
+import { BaseDomain } from "../common/baseDomain";
+
+
 
 export class UserTie extends BaseDomain {
 
+  constructor (
   /**
    * User identifier
    *
    * @type {string}
-   * @memberof UserFollower
+   * @memberof UserTie
    */
-  public userId?: string
+  public userId?: string,
 
     /**
      * Circle creation date time
@@ -16,30 +19,34 @@ export class UserTie extends BaseDomain {
      * @type {Date}
      * @memberof Circle
      */
-  public creationDate?: number
+  public creationDate?: number,
 
     /**
      * User full name
      *
      * @type {string}
-     * @memberof UserFollower
+     * @memberof UserTie
      */
-  public fullName: string
+  public fullName?: string,
 
     /**
      * Avatar URL address
      *
      * @type {string}
-     * @memberof UserFollower
+     * @memberof UserTie
      */
-  public avatar: string
+  public avatar?: string,
 
     /**
      * If following user approved {true} or not {false}
      *
      * @type {Boolean}
-     * @memberof UserFollower
+     * @memberof UserTie
      */
-  public approved?: Boolean
+  public approved?: Boolean,
+
+  ) {
+    super()
+  }
 
 }

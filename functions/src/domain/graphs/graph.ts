@@ -2,6 +2,7 @@ import { BaseDomain } from '../common'
 
 export class Graph extends BaseDomain {
 
+
   constructor (
     /**
      * Left node of graph
@@ -28,12 +29,35 @@ export class Graph extends BaseDomain {
   public rightNode: string,
 
    /**
-    * Graph metadata
+    * Graph left node metadata
     *
-    * @type {string}
     * @memberof Graph
     */
-  public metadata: {}
+  public LeftMetadata: any,
+
+  /**
+   * Graph right node metadata
+   *
+   * @memberof Graph
+   */
+  public rightMetadata: any,
+
+  /**
+   * Graph metadata
+   *
+   * @type {string}
+   * @memberof Graph
+   */
+  public graphMetadata: any,
+
+  /**
+   * Graph node identifier
+   *
+   * @type {string}
+   * @memberof Graph
+   */
+  public nodeId?: string
+
   ) { super() }
 
 }

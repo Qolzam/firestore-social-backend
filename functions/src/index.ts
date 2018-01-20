@@ -7,7 +7,7 @@ export { onUserCreate } from "./services/authorize/authorizeService";
 /**
  * Users
  */
-export { users } from "./services/users/userService";
+export { users, onUpdateUserInfo } from "./services/users/userService";
 
 /**
  * Common
