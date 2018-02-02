@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "npm run build && firebase serve --only functions",
     "shell": "npm run build && firebase experimental:functions:shell",
-    "start": "npm run build && firebase deploy --only functions",
+    "start": "npm run build && firebase deploy --only functions && firebase deploy --only firestore",
     "build": "webpack",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
