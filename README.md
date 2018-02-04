@@ -40,7 +40,6 @@ and then install the package
     ```
  1. Deploy ;)
    ```bash
-    cd functions
     npm start
    ```
 
