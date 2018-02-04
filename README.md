@@ -27,6 +27,10 @@ and then install the package
     ```bash
     git clone git@github.com:<yourname>/firestore-social-backend.git
     ```
+ 1. Go to the project root directory 
+    ```bash
+    cd firestore-social-backend
+    ```
  1. Installing all nodejs modules:
     ```bash
     cd functions && npm install
