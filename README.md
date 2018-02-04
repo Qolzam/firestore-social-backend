@@ -31,10 +31,9 @@ and then install the package
     - Get [firebase config](https://firebase.google.com/docs/web/setup)
   `cd functions && npm install`
  1. Set the `gmail.email` and `gmail.password` Google Cloud environment variables to match the email and password of the Gmail account used to send emails (or [the app password](https://support.google.com/accounts/answer/185833?hl=en) if your account has 2-step verification enabled). For this use:
-
-  ```bash
-  firebase functions:config:set gmail.email="myusername@gmail.com" gmail.password="secretpassword"
-  ```
+    ```bash
+    firebase functions:config:set gmail.email="myusername@gmail.com" gmail.password="secretpassword"
+    ```
  1. Deploy ;)
    ```bash
     cd functions
