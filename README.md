@@ -38,7 +38,7 @@ and then install the package
    ```bash
     cd functions
     npm start
-    ```
+   ```
 
 
 
