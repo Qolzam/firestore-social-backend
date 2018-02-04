@@ -1,4 +1,4 @@
-# firestore-social-backend
+# firestore-social-backend built for [react-social-network](https://github.com/Qolzam/react-social-network)
 
 ## Getting Started
 
