@@ -23,18 +23,24 @@ and then install the package
 #### Install back-end server/serverless
 
  1. Fork the [firestore-social-backend](https://github.com/Qolzam/firestore-social-backend) repository on Github
- 2. Clone your fork to your local machine `git clone git@github.com:<yourname>/firestore-social-backend.git`
- 3. Configure firebase:
+ 1. Clone your fork to your local machine `git clone git@github.com:<yourname>/firestore-social-backend.git`
+ 1. Installing all nodejs modules:
+ 1. Configure firebase:
+    - In command line of [react-social-network] root project, type [firebase login](https://firebase.google.com/docs/cli/). This command connects your local machine to your Firebase account and grants access to your projects. To test that authentication worked, you can run firebase list to see a list of all of your Firebase projects. The list should be the same as the projects listed at [Firebase console](https://console.firebase.google.com).
+    - Be sure the name of firebase project for [react-social-network] and this project is same. You also need to check `.firebaserc` if you set correct project name in `default` field of `projects` field.
     - Get [firebase config](https://firebase.google.com/docs/web/setup)
- 4. Installing all nodejs modules:
   `cd functions && npm install`
- 5. Deoply ;)
-  `npm start`
+ 1. Set the `gmail.email` and `gmail.password` Google Cloud environment variables to match the email and password of the Gmail account used to send emails (or [the app password](https://support.google.com/accounts/answer/185833?hl=en) if your account has 2-step verification enabled). For this use:
 
+  ```bash
+  firebase functions:config:set gmail.email="myusername@gmail.com" gmail.password="secretpassword"
+  ```
+ 1. Deploy ;)
+   ```bash
+    cd functions
+    npm start
+    ```
 
-## Deployment
-Follow [firebase instruction](https://firebase.google.com/docs/hosting/deploying)
-`firebase deploy`
 
 
 
