@@ -4,6 +4,8 @@ import { adminDB, firestoreDB } from '../../data/index';
 import { Feed } from '../../domain/common/feed';
 const nodemailer = require('nodemailer');
 
+// Set variable for this project
+// firebase functions:config:set gmail.email="myusername@gmail.com" gmail.password="secretpassword"
 const gmailEmail = functions.config().gmail.email;
 const gmailPassword = functions.config().gmail.password;
 const mailTransport = nodemailer.createTransport({
