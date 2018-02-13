@@ -78,65 +78,73 @@ export const onUpdateUserInfo = functions.firestore.document('userInfo/{userId}'
 .onUpdate((event) => {
     return new Promise<void>((resolve, reject) => {
        const userId: string = event.params.userId
+       const previousUserInfo:Profile = event.data.previous.data()
        const userInfo:Profile =  event.data.data()
-       const postsRef = firestoreDB.collection('posts').where('ownerUserId', '==', userId)
-       const commentsRef = firestoreDB.collection('comments').where('userId', '==', userId)
-       const leftUserTieRef = firestoreDB.collection('graphs:users').where('leftNode', '==', userId)
-       const rightUserTieRef = firestoreDB.collection('graphs:users').where('rightNode', '==', userId)
 
-       // Get a new write batch
-       var batch = firestoreDB.batch();
+       if(previousUserInfo.avatar === userInfo.avatar && previousUserInfo.fullName === userInfo.fullName) {
+           resolve()
+       } else {
 
-       postsRef.get().then((posts) => {
-            commentsRef.get().then((comments) => {
-                leftUserTieRef.get().then((leftTies) => {
-                    rightUserTieRef.get().then((rightTies) => {
-
-                        // Set update batch for posts
-                        posts.forEach((post) => {
-                            const updatedPost: Post = post.data()
-                            updatedPost.ownerAvatar = userInfo.avatar
-                            updatedPost.ownerDisplayName = userInfo.fullName
-                            batch.update(post.ref, updatedPost)
-                        })  
-
-                        // Set update batch for comments
-                        comments.forEach((comment) => {
-                            const updatedComment = comment.data() as Comment
-                            updatedComment.userDisplayName = userInfo.avatar
-                            updatedComment.userDisplayName = userInfo.fullName
-                            batch.update(comment.ref, updatedComment)
-                        })  
-
-                        // Set update batch for leftTies
-                        leftTies.forEach((leftTie) => {
-                            const updatedGraph = leftTie.data() as Graph
-                            const updatedLeftTie = updatedGraph.LeftMetadata as UserTie
-                            updatedLeftTie.avatar = userInfo.avatar
-                            updatedLeftTie.fullName = userInfo.fullName
-                            updatedGraph.LeftMetadata = updatedLeftTie
-                            batch.update(leftTie.ref, updatedGraph)
-                        })  
-
-                        // Set update batch for rightTies
-                        rightTies.forEach((rightTie) => {
-                            const updatedGraph = rightTie.data() as Graph
-                            const updatedRightTie = updatedGraph.rightMetadata as UserTie
-                            updatedRightTie.avatar = userInfo.avatar
-                            updatedRightTie.fullName = userInfo.fullName
-                            updatedGraph.rightMetadata = updatedRightTie
-                            batch.update(rightTie.ref, updatedGraph)
-                        })  
-
-                        batch.commit().then(() => {
-                            resolve()
+           const postsRef = firestoreDB.collection('posts').where('ownerUserId', '==', userId)
+           const commentsRef = firestoreDB.collection('comments').where('userId', '==', userId)
+           const leftUserTieRef = firestoreDB.collection('graphs:users').where('leftNode', '==', userId)
+           const rightUserTieRef = firestoreDB.collection('graphs:users').where('rightNode', '==', userId)
+    
+           // Get a new write batch
+           var batch = firestoreDB.batch();
+    
+           postsRef.get().then((posts) => {
+                commentsRef.get().then((comments) => {
+                    leftUserTieRef.get().then((leftTies) => {
+                        rightUserTieRef.get().then((rightTies) => {
+    
+                            // Set update batch for posts
+                            posts.forEach((post) => {
+                                const updatedPost: Post = post.data()
+                                updatedPost.ownerAvatar = userInfo.avatar
+                                updatedPost.ownerDisplayName = userInfo.fullName
+                                batch.update(post.ref, updatedPost)
+                            })  
+    
+                            // Set update batch for comments
+                            comments.forEach((comment) => {
+                                const updatedComment = comment.data() as Comment
+                                updatedComment.userDisplayName = userInfo.avatar
+                                updatedComment.userDisplayName = userInfo.fullName
+                                batch.update(comment.ref, updatedComment)
+                            })  
+    
+                            // Set update batch for leftTies
+                            leftTies.forEach((leftTie) => {
+                                const updatedGraph = leftTie.data() as Graph
+                                const updatedLeftTie = updatedGraph.LeftMetadata as UserTie
+                                updatedLeftTie.avatar = userInfo.avatar
+                                updatedLeftTie.fullName = userInfo.fullName
+                                updatedGraph.LeftMetadata = updatedLeftTie
+                                batch.update(leftTie.ref, updatedGraph)
+                            })  
+    
+                            // Set update batch for rightTies
+                            rightTies.forEach((rightTie) => {
+                                const updatedGraph = rightTie.data() as Graph
+                                const updatedRightTie = updatedGraph.rightMetadata as UserTie
+                                updatedRightTie.avatar = userInfo.avatar
+                                updatedRightTie.fullName = userInfo.fullName
+                                updatedGraph.rightMetadata = updatedRightTie
+                                batch.update(rightTie.ref, updatedGraph)
+                            })  
+    
+                            batch.commit().then(() => {
+                                resolve()
+                            })
+                            .catch(reject)
+                            
                         })
-                        .catch(reject)
-                        
                     })
                 })
-            })
-       })
+           })
+       }
+
 
     })
 })
