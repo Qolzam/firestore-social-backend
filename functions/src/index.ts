@@ -2,7 +2,8 @@
 /**
  * Authorize
  */
-export { onUserCreate } from "./services/authorize/authorizeService";
+export { onUserCreate, phoneVerification } from "./services/authorize/authorizeService";
+export { publicAuth } from "./services/authorize/publicAuthService";
 
 /**
  * Users
