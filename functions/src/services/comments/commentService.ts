@@ -10,15 +10,13 @@ import * as _ from 'lodash'
 export const onAddComment = functions.firestore
   .document(`comments/{commentId}`)
   .onCreate(event => {
-    var newValue: Comment = event.data.data();
+    var newValue: Comment = event.data.data()
     const commentId: string = event.params.commentId
     if (newValue) {
       const postRef = firestoreDB.doc(`posts/${newValue.postId}`)
 
-
       // Get post
       var postId = newValue.postId
-      adminDB.messaging().sendToDevice
       /**
        * Increase comment counter and create three comments' slide preview
        */
@@ -68,7 +66,7 @@ export const onDeleteComment = functions.firestore
         let parsedData: {[commentId: string]: Comment} = {}
         let index = 0
         result.forEach((comment) => {
-          if(index < 3) {
+          if (index < 3) {
             const commentData = comment.data() as Comment
             commentData.id = comment.id
             
@@ -88,6 +86,5 @@ export const onDeleteComment = functions.firestore
         })
       }).catch(reject)
     })
-    
     
   })

@@ -1,7 +1,5 @@
-import { FeedType } from "./feedType";
-import { User } from "../users/user";
-
-
+import { FeedType } from './feedType'
+import { User } from '../users/user'
 
 export class Feed {
 

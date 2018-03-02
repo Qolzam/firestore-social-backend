@@ -7,14 +7,17 @@ import * as moment from 'moment'
 import * as express from 'express'
 import * as bodyParser from 'body-parser'
 import { SocialError } from '../../domain/common/index'
-import { PhoneVerification } from '../../domain/authorize/phoneVerification'
-import { UserStateType } from '../../domain/authorize/userStateType';
+import { Verification } from '../../domain/authorize/verification'
+import { UserStateType } from '../../domain/authorize/userStateType'
+import { HttpStatusCode } from '../../data/httpStatusCode'
 
 const plivo = require('plivo')
 const request = require('request')
 const cookieParser = require('cookie-parser')()
 const bcrypt = require('bcrypt')
 const saltRounds = 10
+
+const appName = functions.config().setting.appname
 
 /**
  * Handle on user create
@@ -48,7 +51,7 @@ const validateFirebaseIdToken = (req: any, res: any, next: any) => {
           'Make sure you authorize your request by providing the following HTTP header:',
           'Authorization: Bearer <Firebase ID Token>',
           'or by passing a "__session" cookie.');
-          res.status(403).send(new SocialError("ServerError/Unauthorized", "User is Unauthorized!"))
+          res.status(HttpStatusCode.Forbidden).send(new SocialError("ServerError/Unauthorized", "User is Unauthorized!"))
       return;
     }
   
@@ -68,7 +71,7 @@ const validateFirebaseIdToken = (req: any, res: any, next: any) => {
       return next();
     }).catch((error) => {
       console.error('Error while verifying Firebase ID token:', error);
-      res.status(403).send(new SocialError("ServerError/Unauthorized", "User is Unauthorized!"))
+      res.status(HttpStatusCode.Forbidden).send(new SocialError("ServerError/Unauthorized", "User is Unauthorized!"))
     });
   }
 
@@ -81,14 +84,14 @@ app.use(bodyParser.json())
 app.use(cookieParser);
 app.use(validateFirebaseIdToken);
 
-app.post('/verify', async (req, res) => {
+app.post('/api/sms-verification', async (req, res) => {
     const remoteIpAddress = req.connection.remoteAddress
     const gReCaptcha = req.body['g-recaptcha-response']
     const code = Math.floor(1000 + Math.random() * 9000)
-    const sourcePhoneNumber = functions.config().phone.sourceNumber
+    const sourcePhoneNumber = '+111111'
     const targetPhoneNumber = req.body['phoneNumber']
-    const phoneMessage = 'Verification code from <APP_NAME> : <CODE>'
-    const secretKey = functions.config().recaptcha.secretKey
+    const phoneMessage = `Verification code from ${appName} : <CODE>`
+    const secretKey = functions.config().recaptcha.secretkey
     const userId = (req as any).user.uid
 
     if (gReCaptcha === undefined || gReCaptcha === '' || gReCaptcha === null) {
@@ -100,15 +103,17 @@ app.post('/verify', async (req, res) => {
         body = JSON.parse(body);
         if (body.success !== undefined && !body.success) {
             console.log('Captha/responseError', error)
-            return res.json(new SocialError("ServerError/ResponseCaptchaError", "Failed captcha verification"))
+            console.log('Captha/responseError',response)
+            console.log('Captha/responseError', body)
+            res.status(HttpStatusCode.BadRequest).json(new SocialError("ServerError/ResponseCaptchaError", "Failed captcha verification"))
         }
         console.log('Captha/responseSuccess')
-        const client = new plivo.Client(functions.config().plivo.authId, functions.config().plivo.authToken);        
+        const client = new plivo.Client(functions.config().plivo.authid, functions.config().plivo.authtoken);        
         client.messages.create(sourcePhoneNumber,targetPhoneNumber,phoneMessage.replace('<CODE>', String(code)))
         .then(function (message_created: any) {
             const verifyRef = firestoreDB.collection('verification').doc(userId).collection('phone')
             .doc()
-            const phoneVerification = new PhoneVerification(
+            const phoneVerification = new Verification(
                 verifyRef.id, 
                 String(code), 
                 targetPhoneNumber, 
@@ -117,12 +122,15 @@ app.post('/verify', async (req, res) => {
                 userId
             )
             verifyRef.set({...phoneVerification})
-            return res.status(200).json({ "verifyId": verifyRef.id });
+            return res.status(HttpStatusCode.OK).json({ "verifyId": verifyRef.id });
         })
     });
 })
 
-app.post('/code', async (req, res) => {
+/**
+ * Verify phone code
+ */
+app.post('/api/verify-phone', async (req, res) => {
     const remoteIpAddress = req.connection.remoteAddress
     const code = req.body['code']
     const verifyId = req.body['verifyId']
@@ -136,17 +144,17 @@ app.post('/code', async (req, res) => {
     .doc(verifyId)
 
    return verifyRef.get().then((result) => {
-        const phoneVerification = result.data() as PhoneVerification
+        const phoneVerification = result.data() as Verification
         console.log(phoneVerification, req.body,
             !phoneVerification.isVerified, 
             remoteIpAddress === phoneVerification.remoteIpAddress,
-            targetPhoneNumber === phoneVerification.phoneNumber,
+            targetPhoneNumber === phoneVerification.target,
             userId === phoneVerification.userId
         )
         if(
             !phoneVerification.isVerified 
             && remoteIpAddress === phoneVerification.remoteIpAddress
-            && targetPhoneNumber === phoneVerification.phoneNumber
+            && targetPhoneNumber === phoneVerification.target
             && userId === phoneVerification.userId){
                 if(Number(phoneVerification.code) === Number(code)) {
                     const batch = firestoreDB.batch()
@@ -164,7 +172,7 @@ app.post('/code', async (req, res) => {
                         adminDB.auth().createCustomToken(userId, additionalClaims)
                             .then(function(token) {
                                 // Send token back to client
-                                return res.status(200).json({token})
+                                return res.status(HttpStatusCode.OK).json({token})
                             })
                             .catch(function(error) {
                                 console.log("Error creating custom token:", error);
@@ -175,10 +183,10 @@ app.post('/code', async (req, res) => {
                         res.json(new SocialError("ServerError/CanUpdateState", "Can not update user state!"))
                     })
                 } else {
-                    res.status(403).json(new SocialError("ServerError/WrongCode", "The code is not correct!"))
+                    res.status(HttpStatusCode.Forbidden).json(new SocialError("ServerError/WrongCode", "The code is not correct!"))
                 }
             } else {
-                res.status(403).send(new SocialError("ServerError/Unauthorized", "User is Unauthorized!"))
+                res.status(HttpStatusCode.Forbidden).send(new SocialError("ServerError/Unauthorized", "User is Unauthorized!"))
             }
     })
     .catch((error) => {
@@ -193,7 +201,7 @@ app.post('/code', async (req, res) => {
 /**
  * Register user
  */
-app.post('/register', async (req, res) => {
+app.post('/api/register', async (req, res) => {
     const remoteIpAddress = req.connection.remoteAddress
     const userName = req.body['userName']
     const password = req.body['password']
@@ -220,17 +228,57 @@ app.post('/register', async (req, res) => {
                 password: hash,
                 phoneVerified: false
             }).then(() => {
-                return res.status(200).json({})
+                return res.status(HttpStatusCode.OK).json({})
             }).catch((error: any) => {
-                res.status(500).send(new SocialError("ServerError/NotStoreProtectedUser", "Can not store protected user!"))
+                res.status(HttpStatusCode.InternalServerError).send(new SocialError("ServerError/NotStoreProtectedUser", "Can not store protected user!"))
             })
           })
       }).catch((error: any) => {
-        res.status(500).send(new SocialError("ServerError/NotStoreUserInfo", "Can not store user info!"))
+        res.status(HttpStatusCode.InternalServerError).send(new SocialError("ServerError/NotStoreUserInfo", "Can not store user info!"))
     })
+})
+
+/**
+ * Register user
+ */
+app.post('/api/update-password', async (req, res) => {
+    const remoteIpAddress = req.connection.remoteAddress
+    const newPassword = req.body['newPassword'] as string
+    const confirmPassword = req.body['confirmPassword'] as string
+    const userId = (req as any).user.uid as string
+    console.log('userID: ', userId)
+    if ((newPassword && confirmPassword) 
+    && (newPassword.trim() !== '' && confirmPassword.trim() !== '') 
+    && (confirmPassword === newPassword)) {
+
+        adminDB.auth().updateUser(userId, {
+            password: newPassword
+        }).then((updateResult) => {
+            bcrypt.hash(newPassword, saltRounds, function(error: any, hash: any) {
+                // Store hash in your password DB.
+                firestoreDB.collection('protectedUser').doc(userId)
+                .update({
+                    password: hash,
+                }).then(() => {
+                    return res.status(HttpStatusCode.OK).json({})
+                }).catch((error: any) => {
+                    console.log('ServerError/NotStoreProtectedUser', error)
+                    res.status(HttpStatusCode.InternalServerError).send(new SocialError("ServerError/NotStoreProtectedUser", "Can not store protected user!"))
+                })
+              })
+        })
+        .catch((error) => {
+            console.log('UpdateUser/Password', error)
+            res.status(HttpStatusCode.InternalServerError).send(new SocialError("ServerError/ErrorUpdateUser", "Can not update user!"))
+        })
+        
+    } else {
+        res.status(HttpStatusCode.InternalServerError).send(new SocialError("ServerError/NotEqualConfirmNewPassword", "Confirm password and new password are not equal!"))
+    }
+       
 })
 
 /**
  * Phone verification
  */
-export const phoneVerification = functions.https.onRequest(app)
+export const auth = functions.https.onRequest(app)
