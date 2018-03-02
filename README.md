@@ -40,7 +40,7 @@ and then install the package
     - Be sure the name of firebase project for [react-social-network] and this project is same. You also need to check `.firebaserc` if you set correct project name in `default` field of `projects` field.
  1. Set the `gmail.email` and `gmail.password` Google Cloud environment variables to match the email and password of the Gmail account used to send emails (or [the app password](https://support.google.com/accounts/answer/185833?hl=en) if your account has 2-step verification enabled). The `recaptcha.secretKey` key is using for recaptcha secret key in SMS verification. The `phone.sourceNumber`, `plivo.authId` and `plivo.authToken` are configuration from [Plivo SMS Service](https://www.plivo.com/) in SMS verification .For this use:
     ```bash
-    firebase functions:config:set gmail.email="myusername@gmail.com" gmail.password="secretpassword" recaptcha.secretkey="secretKey" phone.sourcenumber="sourceNumber" plivo.authid="authId" plivo.authtoken="authToken" setting.appname="Polling Social"
+    firebase functions:config:set gmail.email="myusername@gmail.com" gmail.password="secretpassword" recaptcha.secretkey="secretKey" phone.sourcenumber="sourceNumber" plivo.authid="authId" plivo.authtoken="authToken" setting.appname="App Name"
     ```
  1. Deploy ;)
    ```bash
