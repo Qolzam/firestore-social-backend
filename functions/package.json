@@ -9,7 +9,9 @@
     "build": "webpack",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test": "./node_modules/.bin/mocha --reporter spec"
+    "test": "./node_modules/.bin/mocha --reporter spec",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "@types/cors": "^2.8.3",
@@ -25,7 +27,8 @@
     "nodemailer": "^4.4.1",
     "plivo": "^4.0.0",
     "request": "^2.83.0",
-    "tslint": "^5.9.1"
+    "tslint": "^5.9.1",
+    "snyk": "^1.83.0"
   },
   "private": true,
   "devDependencies": {
@@ -35,5 +38,6 @@
     "typescript": "^2.6.2",
     "webpack": "^3.10.0",
     "webpack-node-externals": "^1.6.0"
-  }
+  },
+  "snyk": true
 }
