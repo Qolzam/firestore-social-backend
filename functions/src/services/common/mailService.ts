@@ -10,12 +10,12 @@ const appName = functions.config().setting.appname
 
 export const onCreateFeedback = functions.firestore
 .document(`feeds/{feedId}`)
-.onCreate((event) => {
+.onCreate((snap, context) => {
   return new Promise<void>((resolve, reject) => {
-    const feed: Feed =  event.data.data()
+    const feed: Feed =  snap.data()
     const from = `${appName} Feedback <${gmailEmail}>`
     const to = "amir.gholzam@gmail.com"
-    const subject = `${feed.feedType} -${feed.user!.email} - ${event.data.createTime}`
+    const subject = `${feed.feedType} -${feed.user!.email} - ${snap.createTime}`
     const text = `
     Feedback type: ${feed.feedType}
     Feedback ID: ${feed.id}
