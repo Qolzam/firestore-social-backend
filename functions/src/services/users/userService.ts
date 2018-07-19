@@ -75,11 +75,13 @@ export const users =  functions.https.onRequest(app)
  * Handle on update user information
  */
 export const onUpdateUserInfo = functions.firestore.document('userInfo/{userId}')
-.onUpdate((event) => {
+.onUpdate((change, context) => {
     return new Promise<void>((resolve, reject) => {
-       const userId: string = event.params.userId
-       const previousUserInfo:Profile = event.data.previous.data()
-       const userInfo:Profile =  event.data.data()
+       const userId: string = context.params.userId
+       // removed type constraint Profile for compile
+       const previousUserInfo = change.before.data()
+       // removed type constraint Profile for compile
+       const userInfo =  change.after.data()
 
        if(previousUserInfo.avatar === userInfo.avatar && previousUserInfo.fullName === userInfo.fullName) {
            resolve()
