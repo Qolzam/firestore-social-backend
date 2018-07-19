@@ -9,14 +9,14 @@ import * as _ from 'lodash'
  */
 export const onAddComment = functions.firestore
   .document(`comments/{commentId}`)
-  .onCreate(event => {
-    var newValue: Comment = event.data.data()
+  .onCreate((dataSnapshot, event) => {
+    var newComment = dataSnapshot.data() as Comment
     const commentId: string = event.params.commentId
-    if (newValue) {
-      const postRef = firestoreDB.doc(`posts/${newValue.postId}`)
+    if (newComment) {
+      const postRef = firestoreDB.doc(`posts/${newComment.postId}`)
 
       // Get post
-      var postId = newValue.postId
+      var postId = newComment.postId
       /**
        * Increase comment counter and create three comments' slide preview
        */
@@ -31,9 +31,9 @@ export const onAddComment = functions.firestore
               comments = {}
             }
             if (commentCount < 4) {
-              transaction.update(postRef, { comments: { ...comments, [commentId]: newValue } })
+              transaction.update(postRef, { comments: { ...comments, [commentId]: newComment } })
             } else {
-              let sortedObjects = { ...comments, [commentId]: newValue }
+              let sortedObjects = { ...comments, [commentId]: newComment }
               // Sort posts with creation date
               sortedObjects = _.fromPairs(_.toPairs(sortedObjects)
                 .sort((a: any, b: any) => parseInt(b[1].creationDate, 10) - parseInt(a[1].creationDate, 10)).slice(0, 3))
@@ -51,13 +51,12 @@ export const onAddComment = functions.firestore
  */
 export const onDeleteComment = functions.firestore
   .document(`comments/{commentId}`)
-  .onDelete(event => {
+  .onDelete((dataSnapshot, context) => {
     return new Promise((resolve, reject) => {
-      const deletedComment: Comment = event.data.previous.data()
-
-      const commentId: string = event.params.commentId
+      const deletedComment = dataSnapshot.data() as Comment
+      const commentId: string = context.params.commentId
       const postId: string = deletedComment.postId
-  
+
       const postRef = firestoreDB.doc(`posts/${postId}`)
       firestoreDB.collection(`comments`)
       .where(`postId`, `==`, postId)

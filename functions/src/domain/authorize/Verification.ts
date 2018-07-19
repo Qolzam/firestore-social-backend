@@ -6,6 +6,6 @@ export class Verification {
         public creationDate: number,
         public remoteIpAddress: string,
         public userId: string,
-        public isVerified = false
+        public isVerified: boolean = false
     ) {}
 }

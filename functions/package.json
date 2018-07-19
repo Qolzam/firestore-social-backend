@@ -12,28 +12,29 @@
     "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "dependencies": {
-    "@types/cors": "^2.8.3",
-    "bcrypt": "^1.0.3",
-    "body-parser": "^1.18.2",
+    "@types/cors": "^2.8.4",
+    "bcrypt": "^3.0.0",
+    "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.4",
-    "express": "^4.16.2",
-    "firebase-admin": "^5.8.2",
-    "firebase-functions": "^0.8.1",
-    "lodash": "^4.17.4",
-    "moment": "^2.20.1",
-    "nodemailer": "^4.4.1",
-    "plivo": "^4.0.0",
-    "request": "^2.83.0",
-    "tslint": "^5.9.1"
+    "express": "^4.16.3",
+    "firebase-admin": "^5.13.0",
+    "firebase-functions": "^1.1.0",
+    "lodash": "^4.17.10",
+    "moment": "^2.22.2",
+    "nodemailer": "^4.6.7",
+    "plivo": "^4.0.1",
+    "request": "^2.87.0",
+    "tslint": "^5.11.0"
   },
   "private": true,
   "devDependencies": {
     "@types/moment": "^2.13.0",
-    "fork-ts-checker-webpack-plugin": "^0.2.9",
-    "ts-loader": "^3.2.0",
-    "typescript": "^2.6.2",
-    "webpack": "^3.10.0",
-    "webpack-node-externals": "^1.6.0"
+    "fork-ts-checker-webpack-plugin": "^0.4.3",
+    "ts-loader": "^4.4.2",
+    "typescript": "^2.9.2",
+    "webpack": "^4.16.1",
+    "webpack-cli": "^3.1.0",
+    "webpack-node-externals": "^1.7.2"
   }
 }

@@ -10,9 +10,6 @@ export class RegisterUserResult extends BaseDomain {
   }
     /**
      * User identifier
-     *
-     * @type {string}
-     * @memberof LoginUser
      */
 
   public get uid (): string {

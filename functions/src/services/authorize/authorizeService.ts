@@ -22,13 +22,13 @@ const appName = functions.config().setting.appname
 /**
  * Handle on user create
  */
-export const onUserCreate = functions.auth.user().onCreate((event) => {
+export const onUserCreate = functions.auth.user().onCreate((user) => {
     return new Promise<void>((resolve, reject) => {
-        const user = event.data;
-        const followingCircle = new Circle();
-        followingCircle.creationDate = moment().unix();
-        followingCircle.name = `Following`;
-        followingCircle.ownerId = user.uid;
+      
+        const followingCircle = new Circle()
+        followingCircle.creationDate = moment().unix()
+        followingCircle.name = `Following`
+        followingCircle.ownerId = user.uid
         followingCircle.isSystem = true
         return firestoreDB.collection(`users`).doc(user.uid).collection(`circles`).add({ ...followingCircle })
             .then((result) => {
@@ -43,46 +43,45 @@ export const onUserCreate = functions.auth.user().onCreate((event) => {
 // `Authorization: Bearer <Firebase ID Token>`.
 // when decoded successfully, the ID Token content will be added as `req.user`.
 const validateFirebaseIdToken = (req: any, res: any, next: any) => {
-    console.log('Check if request is authorized with Firebase ID token');
+    console.log('Check if request is authorized with Firebase ID token')
   
     if ((!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) &&
         !req.cookies.__session) {
       console.error('No Firebase ID token was passed as a Bearer token in the Authorization header.',
           'Make sure you authorize your request by providing the following HTTP header:',
           'Authorization: Bearer <Firebase ID Token>',
-          'or by passing a "__session" cookie.');
-          res.status(HttpStatusCode.Forbidden).send(new SocialError("ServerError/Unauthorized", "User is Unauthorized!"))
-      return;
+          'or by passing a "__session" cookie.')
+          res.status(HttpStatusCode.Forbidden).send(new SocialError('ServerError/Unauthorized', 'User is Unauthorized!'))
+      return
     }
   
-    let idToken;
+    let idToken
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-      console.log('Found "Authorization" header');
+      console.log('Found "Authorization" header')
       // Read the ID Token from the Authorization header.
-      idToken = req.headers.authorization.split('Bearer ')[1];
+      idToken = req.headers.authorization.split('Bearer ')[1]
     } else {
-      console.log('Found "__session" cookie');
+      console.log('Found "__session" cookie')
       // Read the ID Token from cookie.
-      idToken = req.cookies.__session;
+      idToken = req.cookies.__session
     }
     adminDB.auth().verifyIdToken(idToken).then((decodedIdToken) => {
-      console.log('ID Token correctly decoded', decodedIdToken);
-      req.user = decodedIdToken;
-      return next();
+      console.log('ID Token correctly decoded', decodedIdToken)
+      req.user = decodedIdToken
+      return next()
     }).catch((error) => {
-      console.error('Error while verifying Firebase ID token:', error);
-      res.status(HttpStatusCode.Forbidden).send(new SocialError("ServerError/Unauthorized", "User is Unauthorized!"))
-    });
+      console.error('Error while verifying Firebase ID token:', error)
+      res.status(HttpStatusCode.Forbidden).send(new SocialError('ServerError/Unauthorized', 'User is Unauthorized!'))
+    })
   }
-
 
 const app = express()
 const cors = require('cors')({ origin: true })
-app.disable("x-powered-by")
+app.disable('x-powered-by')
 app.use(cors)
 app.use(bodyParser.json())
-app.use(cookieParser);
-app.use(validateFirebaseIdToken);
+app.use(cookieParser)
+app.use(validateFirebaseIdToken)
 
 app.post('/api/sms-verification', async (req, res) => {
     const remoteIpAddress = req.connection.remoteAddress
@@ -95,22 +94,22 @@ app.post('/api/sms-verification', async (req, res) => {
     const userId = (req as any).user.uid
 
     if (gReCaptcha === undefined || gReCaptcha === '' || gReCaptcha === null) {
-        return res.json(new SocialError("ServerError/NullCaptchaValue", "Please select captcha first"));
+        return res.json(new SocialError('ServerError/NullCaptchaValue', 'Please select captcha first'))
     }
-    const verificationURL = "https://www.google.com/recaptcha/api/siteverify?secret=" + secretKey + "&response=" + gReCaptcha + "&remoteip=" + remoteIpAddress;
+    const verificationURL = 'https://www.google.com/recaptcha/api/siteverify?secret=' + secretKey + '&response=' + gReCaptcha + '&remoteip=' + remoteIpAddress
 
     request(verificationURL, (error: any, response: any, body: any) => {
-        body = JSON.parse(body);
+        body = JSON.parse(body)
         if (body.success !== undefined && !body.success) {
             console.log('Captha/responseError', error)
             console.log('Captha/responseError',response)
             console.log('Captha/responseError', body)
-            res.status(HttpStatusCode.BadRequest).json(new SocialError("ServerError/ResponseCaptchaError", "Failed captcha verification"))
+            res.status(HttpStatusCode.BadRequest).json(new SocialError('ServerError/ResponseCaptchaError', 'Failed captcha verification'))
         }
         console.log('Captha/responseSuccess')
-        const client = new plivo.Client(functions.config().plivo.authid, functions.config().plivo.authtoken);        
+        const client = new plivo.Client(functions.config().plivo.authid, functions.config().plivo.authtoken)        
         client.messages.create(sourcePhoneNumber,targetPhoneNumber,phoneMessage.replace('<CODE>', String(code)))
-        .then(function (message_created: any) {
+        .then((messageCreated: any) => {
             const verifyRef = firestoreDB.collection('verification').doc(userId).collection('phone')
             .doc()
             const phoneVerification = new Verification(
@@ -122,9 +121,9 @@ app.post('/api/sms-verification', async (req, res) => {
                 userId
             )
             verifyRef.set({...phoneVerification})
-            return res.status(HttpStatusCode.OK).json({ "verifyId": verifyRef.id });
+            return res.status(HttpStatusCode.OK).json({ 'verifyId': verifyRef.id })
         })
-    });
+    })
 })
 
 /**
@@ -151,12 +150,12 @@ app.post('/api/verify-phone', async (req, res) => {
             targetPhoneNumber === phoneVerification.target,
             userId === phoneVerification.userId
         )
-        if(
+        if (
             !phoneVerification.isVerified 
             && remoteIpAddress === phoneVerification.remoteIpAddress
             && targetPhoneNumber === phoneVerification.target
-            && userId === phoneVerification.userId){
-                if(Number(phoneVerification.code) === Number(code)) {
+            && userId === phoneVerification.userId) {
+                if (Number(phoneVerification.code) === Number(code)) {
                     const batch = firestoreDB.batch()
                     batch.update(result.ref, {isVerified: true})
 
@@ -170,33 +169,31 @@ app.post('/api/verify-phone', async (req, res) => {
                             phoneVerified: true
                           }
                         adminDB.auth().createCustomToken(userId, additionalClaims)
-                            .then(function(token) {
+                            .then((token: any) => {
                                 // Send token back to client
                                 return res.status(HttpStatusCode.OK).json({token})
                             })
-                            .catch(function(error) {
-                                console.log("Error creating custom token:", error);
-                            });
+                            .catch((error: any) => {
+                                console.log('Error creating custom token:', error)
+                            })
                     })
                     .catch((error) => {
                         console.log('ServerError/CanUpdateState', error)
-                        res.json(new SocialError("ServerError/CanUpdateState", "Can not update user state!"))
+                        res.json(new SocialError('ServerError/CanUpdateState', 'Can not update user state!'))
                     })
                 } else {
-                    res.status(HttpStatusCode.Forbidden).json(new SocialError("ServerError/WrongCode", "The code is not correct!"))
+                    res.status(HttpStatusCode.Forbidden).json(new SocialError('ServerError/WrongCode', 'The code is not correct!'))
                 }
             } else {
-                res.status(HttpStatusCode.Forbidden).send(new SocialError("ServerError/Unauthorized", "User is Unauthorized!"))
+                res.status(HttpStatusCode.Forbidden).send(new SocialError('ServerError/Unauthorized', 'User is Unauthorized!'))
             }
     })
     .catch((error) => {
         console.log('ServerError/VerifyIdNotAccept', error)
-        return res.json(new SocialError("ServerError/VerifyIdNotAccept", "We coudn't for you verification!"))
+        return res.json(new SocialError('ServerError/VerifyIdNotAccept', "We coudn't for you verification!"))
     })
     
-
 })
-
 
 /**
  * Register user
@@ -230,11 +227,11 @@ app.post('/api/register', async (req, res) => {
             }).then(() => {
                 return res.status(HttpStatusCode.OK).json({})
             }).catch((error: any) => {
-                res.status(HttpStatusCode.InternalServerError).send(new SocialError("ServerError/NotStoreProtectedUser", "Can not store protected user!"))
+                res.status(HttpStatusCode.InternalServerError).send(new SocialError('ServerError/NotStoreProtectedUser', 'Can not store protected user!'))
             })
           })
       }).catch((error: any) => {
-        res.status(HttpStatusCode.InternalServerError).send(new SocialError("ServerError/NotStoreUserInfo", "Can not store user info!"))
+        res.status(HttpStatusCode.InternalServerError).send(new SocialError('ServerError/NotStoreUserInfo', 'Can not store user info!'))
     })
 })
 
@@ -263,17 +260,17 @@ app.post('/api/update-password', async (req, res) => {
                     return res.status(HttpStatusCode.OK).json({})
                 }).catch((error: any) => {
                     console.log('ServerError/NotStoreProtectedUser', error)
-                    res.status(HttpStatusCode.InternalServerError).send(new SocialError("ServerError/NotStoreProtectedUser", "Can not store protected user!"))
+                    res.status(HttpStatusCode.InternalServerError).send(new SocialError('ServerError/NotStoreProtectedUser', 'Can not store protected user!'))
                 })
               })
         })
         .catch((error) => {
             console.log('UpdateUser/Password', error)
-            res.status(HttpStatusCode.InternalServerError).send(new SocialError("ServerError/ErrorUpdateUser", "Can not update user!"))
+            res.status(HttpStatusCode.InternalServerError).send(new SocialError('ServerError/ErrorUpdateUser', 'Can not update user!'))
         })
         
     } else {
-        res.status(HttpStatusCode.InternalServerError).send(new SocialError("ServerError/NotEqualConfirmNewPassword", "Confirm password and new password are not equal!"))
+        res.status(HttpStatusCode.InternalServerError).send(new SocialError('ServerError/NotEqualConfirmNewPassword', 'Confirm password and new password are not equal!'))
     }
        
 })

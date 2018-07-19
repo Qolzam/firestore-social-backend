@@ -1,5 +1,4 @@
-import { BaseDomain } from "../common";
-
+import { BaseDomain } from '../common'
 
 export class LoginUser extends BaseDomain {
 
@@ -17,9 +16,6 @@ export class LoginUser extends BaseDomain {
 
     /**
      * User identifier
-     *
-     * @type {string}
-     * @memberof LoginUser
      */
   public get uid (): string {
     return this._uid
@@ -27,10 +23,6 @@ export class LoginUser extends BaseDomain {
 
   /**
    * If user's email is verifide {true} or not {false}
-   *
-   * @readonly
-   * @type {boolean}
-   * @memberof LoginUser
    */
   public get emailVerified (): boolean {
     return this._emailVerified

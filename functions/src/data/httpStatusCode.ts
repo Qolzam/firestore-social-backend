@@ -2,8 +2,7 @@
  * Http status codes
  * Thanks to https://msdn.microsoft.com/en-us/library/ee434093.aspx
  */
-export enum HttpStatusCode
-    {
+export enum HttpStatusCode {
         Accepted = 202,
         Ambiguous = 300,
         BadGateway = 502,
