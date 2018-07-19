@@ -22,9 +22,9 @@ const appName = functions.config().setting.appname
 /**
  * Handle on user create
  */
-export const onUserCreate = functions.auth.user().onCreate((user) => {
+export const onUserCreate = functions.auth.user().onCreate((change, context) => {
     return new Promise<void>((resolve, reject) => {
-      
+        const user = change
         const followingCircle = new Circle()
         followingCircle.creationDate = moment().unix()
         followingCircle.name = `Following`
