@@ -12,7 +12,7 @@
     "logs": "firebase functions:log",
     "test": "./node_modules/.bin/mocha --reporter spec",
     "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect",
+    "prepare": "yarn run snyk-protect",
     "prepublish": "npm run snyk-protect"
   },
   "dependencies": {
@@ -30,7 +30,7 @@
     "plivo": "^4.0.1",
     "request": "^2.87.0",
     "tslint": "^5.11.0",
-    "snyk": "^1.161.1"
+    "snyk": "^1.298.1"
   },
   "private": true,
   "devDependencies": {
