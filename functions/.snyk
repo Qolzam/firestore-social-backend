@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.13.3
+version: v1.14.1
 ignore: {}
 # patches apply the minimum changes required to fix a vulnerability
 patch:
@@ -39,3 +39,46 @@ patch:
         patched: '2019-05-06T02:43:30.362Z'
     - firebase-admin > @google-cloud/storage > @google-cloud/common > google-auto-auth > google-auth-library > gcp-metadata > axios:
         patched: '2019-05-06T02:43:30.362Z'
+  SNYK-JS-LODASH-567746:
+    - firebase-functions > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - plivo > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - firebase-admin > @google-cloud/firestore > google-gax > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - firebase-admin > @google-cloud/storage > async > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - snyk > @snyk/dep-graph > graphlib > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - snyk > snyk-nodejs-lockfile-parser > graphlib > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - snyk > snyk-go-plugin > graphlib > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - firebase-admin > @google-cloud/firestore > google-gax > grpc > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - firebase-admin > @google-cloud/storage > @google-cloud/common > google-auto-auth > async > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - firebase-admin > @google-cloud/storage > gcs-resumable-upload > google-auto-auth > async > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - firebase-admin > @google-cloud/storage > @google-cloud/common > split-array-stream > async > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - snyk > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - snyk > @snyk/dep-graph > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - snyk > inquirer > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - snyk > snyk-config > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - snyk > snyk-mvn-plugin > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - snyk > snyk-nodejs-lockfile-parser > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - snyk > snyk-nuget-plugin > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - snyk > snyk-nuget-plugin > dotnet-deps-parser > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
+    - snyk > snyk-php-plugin > @snyk/composer-lockfile-parser > lodash:
+        patched: '2020-05-01T02:43:13.602Z'
